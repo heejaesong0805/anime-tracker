@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Anime Tracker</title>
+</head>
+<body>
+    <h1>{{ current_user.username }}'s' Anime Tracker</h1>
+
+    <p><a href="{{ url_for('logout') }}">Logout</a></p>
+    
+    <form method="POST" action="/">
+        <input type="text" name="anime_name" placeholder="Enter an anime..." required>
+        <button type="submit">Add to List</button>
+    </form>
+
+    <hr>
+
+    <h2>Saved Animes</h2>
+    <ul>
+        {% for anime in animes %}
+            <li>
+                {{ anime.name }} 
+                <a href="{{ url_for('delete', id=anime.id) }}" style="color: red; margin-left: 10px;">[Delete]</a>
+            </li>
+        {% else %}
+            <li>No animes added yet!</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
