@@ -1,26 +1,30 @@
-from flask import Flask, render_template, request, redirect, url_for
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import UserMixin, LoginManager, login_user, login_required, logout_user, current_user
-from werkzeug.security import generate_password_hash, check_password_hash
 import os
 from dotenv import load_dotenv
+from flask import Flask, render_template, request, redirect, url_for
+from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_login import UserMixin, LoginManager, login_user, login_required, logout_user, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 
 load_dotenv() # Loads the .env file
 
 app = Flask(__name__)
-
 app.secret_key = os.environ.get('SECRET_KEY')
 
-# Configure the SQLite database, relative to the app instance folder
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///animes.db'
+# Fetch the database URL from the environment
+db_url = os.environ.get('DATABASE_URL', 'sqlite:///animes.db')
+
+# Fix for a known SQLAlchemy quirk with Render's URL format
+if db_url.startswith("postgres://"):
+    db_url = db_url.replace("postgres://", "postgresql://", 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = db_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize the database tool
 db = SQLAlchemy(app)
-
 migrate = Migrate(app, db)
 
 # Login Manager
